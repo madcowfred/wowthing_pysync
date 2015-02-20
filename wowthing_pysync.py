@@ -73,17 +73,17 @@ def loop(config, wtf_path):
             new_mtime = os.path.getmtime(filepath)
             if new_mtime > old_mtime:
                 last_mtime[filepath] = new_mtime
-                upload(config, filepath)
+                upload(config, filepath, session)
 
         time.sleep(interval)
 
-def upload(config, filepath):
+def upload(config, filepath, session):
     log('uploading %s' % filepath)
 
     data = dict(username=config.get('sync', 'username'), password=config.get('sync', 'password'))
     files = dict(lua_file=open(filepath, 'rb'))
 
-    r = requests.post(UPLOAD_URI, data, files=files)
+    r = session.post(UPLOAD_URI, data, files=files)
     if r.status_code == requests.codes.ok:
         log('upload complete')
     else:
